@@ -1,8 +1,82 @@
 # Facebook广告投放自动化需求1.0（阿童木）
 
 ## 目录
-
-[TOC]
+   * [Facebook广告投放自动化需求1.0（阿童木）](#facebook广告投放自动化需求10阿童木)
+      * [目录](#目录)
+      * [项目概述](#项目概述)
+         * [需求背景](#需求背景)
+            * [项目目标](#项目目标)
+         * [规划和进度](#规划和进度)
+            * [系统规划](#系统规划)
+            * [进度](#进度)
+      * [功能需求](#功能需求)
+         * [创建](#创建)
+            * [批量创建（一期功能）](#批量创建一期功能)
+               * [功能背景](#功能背景)
+               * [流程图](#流程图)
+               * [原型图](#原型图)
+               * [前端需求](#前端需求)
+               * [后端需求](#后端需求)
+               * [基本信息](#基本信息)
+                  * [选择广告账户、应用](#选择广告账户应用)
+                  * [创建名称](#创建名称)
+               * [投放信息](#投放信息)
+                  * [新建模板](#新建模板)
+                  * [模板结构](#模板结构)
+                  * [字段对应关系](#字段对应关系)
+                  * [名称组成规则](#名称组成规则)
+                  * [审核规则](#审核规则)
+                  * [国家代码转换规则](#国家代码转换规则)
+               * [素材选择](#素材选择)
+                  * [选择方式](#选择方式)
+                  * [关联素材](#关联素材)
+                  * [广告创建规则](#广告创建规则)
+               * [广告账户、应用列表](#广告账户应用列表)
+               * [前后端交互](#前后端交互)
+                  * [流程图](#流程图-1)
+                  * [json结构](#json结构)
+                  * [json字段表](#json字段表)
+                  * [json示例](#json示例)
+                  * [上传所需接口、参考文档](#上传所需接口参考文档)
+                  * [创建所需字段处理方法](#创建所需字段处理方法)
+            * [素材库（一期功能）](#素材库一期功能)
+               * [需求背景](#需求背景-1)
+                  * [流程图](#流程图-2)
+                  * [原型图](#原型图-1)
+               * [素材上传&amp;使用](#素材上传使用)
+                  * [本地上传](#本地上传)
+                  * [上传到Facebook服务器](#上传到facebook服务器)
+                  * [素材使用](#素材使用)
+                  * [素材库管理](#素材库管理)
+         * [投放](#投放)
+            * [数据查看](#数据查看)
+               * [功能背景](#功能背景-1)
+               * [查看数据](#查看数据)
+               * [数据筛选、排序](#数据筛选排序)
+               * [原型图](#原型图-2)
+            * [投放规则](#投放规则)
+               * [流程图](#流程图-3)
+         * [内容源](#内容源)
+            * [CM Design平台接口接入](#cm-design平台接口接入)
+      * [非功能需求](#非功能需求)
+         * [账号管理](#账号管理)
+            * [账号上传](#账号上传)
+            * [原型图](#原型图-3)
+      * [附录](#附录)
+            * [国家代码转换规则](#国家代码转换规则-1)
+         * [账号&amp;Token信息](#账号token信息)
+            * [账号信息](#账号信息)
+            * [应用信息](#应用信息)
+            * [Token](#token)
+               * [Facebook平台token架构](#facebook平台token架构)
+               * [生成长期Token](#生成长期token)
+               * [Business Manager平台](#business-manager平台)
+                  * [新增账户](#新增账户)
+                  * [查看自有帐户](#查看自有帐户)
+                  * [移除帐户](#移除帐户)
+                  * [查看帐户访问权限](#查看帐户访问权限)
+                  * [查看商务管理平台拥有的应用](#查看商务管理平台拥有的应用)
+                  * [从商务管理平台中移除应用](#从商务管理平台中移除应用)
 
 ## 项目概述
 
@@ -386,7 +460,9 @@ Facebook 营销API中提供了很多接口可以解决目前投放中遇到的�
 
 ###### json结构
 
-![json](./img/json.png)
+json结构需要前后端协商制定。
+
+
 
 ###### json字段表
 
@@ -423,18 +499,18 @@ Facebook 营销API中提供了很多接口可以解决目前投放中遇到的�
 
 ###### 上传所需接口、参考文档
 
-| 层级       | 说明             | 上传顺序 | 上传说明                                   | 库                                        | 接口               | 参考文档地址 |
+| 层级       | 说明              | 上传说明                                   | 库                                        | 接口               | 参考文档地址 |
 | ---------- | ---------------- | -------- | ------------------------------------------ | ----------------------------------------- | ------------------ | ------------------ |
-| Campaign   | 广告系列         | 2        | 创建后，返回Campaign ID                    | facebookads.adobjects.adaccount.AdAccount | create_campaign    |[Campaign](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group)|
-| Adset      | 广告组           | 3        | 使用返回的Campaign ID创建Adset             | facebookads.adobjects.adset.AdSet         | adset.update       |[Ad set](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign)|
-| Ad        | 广告             | 4        | 使用返回的Ad set ID和广告创意创建Adset     | facebookads.adobjects.adaccount.AdAccount | create_ad          |[Ad](https://developers.facebook.com/docs/marketing-api/reference/adgroup)|
-| Adcreative | 广告创意（素材） | 1        | 会从后端收到素材id，使用素材id创建广告创意 | facebookads.adobjects.adaccount.AdAccount | create_ad_creative |[Ad creative](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)|
+| Campaign   | 广告系列         | 创建后，返回Campaign ID                    | facebookads.adobjects.adaccount.AdAccount | create_campaign    |[Campaign](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group)|
+| Adset      | 广告组        | 使用返回的Campaign ID创建Adset             | facebookads.adobjects.adset.AdSet         | adset.update       |[Ad set](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign)|
+| Ad        | 广告         | 使用返回的Ad set ID和广告创意创建Adset     | facebookads.adobjects.adaccount.AdAccount | create_ad          |[Ad](https://developers.facebook.com/docs/marketing-api/reference/adgroup)|
+| Adcreative | 广告创意（素材）| 会从后端收到素材id，使用素材id创建广告创意 | facebookads.adobjects.adaccount.AdAccount | create_ad_creative |[Ad creative](https://developers.facebook.com/docs/marketing-api/reference/ad-creative)|
 
 
 
 ###### 创建所需字段处理方法
 
-这里是我看参考文档总结出来的创建所需字段，可能会缺，要是缺了啥随时问我。
+这里是我看参考文档总结出来的创建所需字段，包括了一部分写死的字段。
 
 | 创建层级              | 所需字段                        | 含义                         | 字段来源                                | 参考文档 |
 | --------------------- | ------------------------------- | ---------------------------- | --------------------------------------- | --------------------------------------- |
@@ -491,7 +567,7 @@ Facebook 营销API中提供了很多接口可以解决目前投放中遇到的�
 
 ###### 原型图
 
-原型图在需求文档根目录中。
+[素材上传原型图](https://motodriver.github.io/demo/%E5%8E%9F%E5%9E%8B%E5%9B%BE/%E7%B4%A0%E6%9D%90%E4%B8%8A%E4%BC%A0.html)
 
 
 
@@ -814,6 +890,8 @@ Admin权限的token正在协调申请中，申请好了之后可以通过Admin a
 
 [BM平台管理参考文档](https://developers.facebook.com/docs/marketing-api/businessmanager/assets)
 
+[通过user权限获取app token](https://developers.facebook.com/docs/marketing-api/businessmanager/systemuser/?translation#generate-token)
+
 
 
 ###### 新增账户
@@ -851,32 +929,6 @@ curl -G \
 
 
 
-###### 移除帐户
-
-如果您的商务管理平台是 `OWNER`，且广告帐户为 `CONFIRMED` 状态，则您不能从平台删除广告帐户。如果您具有处于 `PENDING` 状态的访问请求，或具有对广告帐户的 `AGENCY` 访问权限，则可以发出以下 `DELETE` 调用：
-
-```
-curl \
--X DELETE \
--F "adaccount_id=act_<AD_ACCOUNT_ID>" \
--F "access_token=<ACCESS_TOKEN>" \
-"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/ad_accounts"
-```
-
-
-
-######  查看帐户访问权限 
-
-如要查看某个用户对某个广告帐户拥有的权限，请发出以下 `GET` 调用：
-
-```
-curl -G \
--d "access_token=ACCESS_TOKEN" \
-"https://graph.facebook.com/act_AD_ACCOUNT_ID/assigned_users"
-```
-
-
-
 ###### 查看商务管理平台拥有的应用
 
 如要查看商务管理平台拥有的所有应用程序：
@@ -906,15 +958,3 @@ curl -G \
 响应包含 `permitted_roles`。这是您可为该特定广告帐户分配的一组身份。
 
 
-
-###### 从商务管理平台中移除应用
-
-如要从商务管理平台中移除某个应用，请发出以下 `DELETE` 调用：
-
-```
-curl \
--X DELETE \
--F "app_id=<APP_ID>" \
--F "access_token=<ACCESS_TOKEN>" \
-"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/apps"
-```
