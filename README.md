@@ -36,7 +36,6 @@
                   * [流程图](#流程图-1)
                   * [json结构](#json结构)
                   * [json字段表](#json字段表)
-                  * [json示例](#json示例)
                   * [上传所需接口、参考文档](#上传所需接口参考文档)
                   * [创建所需字段处理方法](#创建所需字段处理方法)
             * [素材库（一期功能）](#素材库一期功能)
@@ -44,8 +43,6 @@
                   * [流程图](#流程图-2)
                   * [原型图](#原型图-1)
                * [素材上传&amp;使用](#素材上传使用)
-                  * [本地上传](#本地上传)
-                  * [上传到Facebook服务器](#上传到facebook服务器)
                   * [素材使用](#素材使用)
                   * [素材库管理](#素材库管理)
          * [投放](#投放)
@@ -63,20 +60,14 @@
             * [账号上传](#账号上传)
             * [原型图](#原型图-3)
       * [附录](#附录)
-            * [国家代码转换规则](#国家代码转换规则-1)
-         * [账号&amp;Token信息](#账号token信息)
-            * [账号信息](#账号信息)
-            * [应用信息](#应用信息)
-            * [Token](#token)
-               * [Facebook平台token架构](#facebook平台token架构)
+               * [Token获得方式](#token获得方式)
                * [生成长期Token](#生成长期token)
                * [Business Manager平台](#business-manager平台)
-                  * [新增账户](#新增账户)
                   * [查看自有帐户](#查看自有帐户)
-                  * [移除帐户](#移除帐户)
-                  * [查看帐户访问权限](#查看帐户访问权限)
                   * [查看商务管理平台拥有的应用](#查看商务管理平台拥有的应用)
-                  * [从商务管理平台中移除应用](#从商务管理平台中移除应用)
+                  * [认领账户](#认领账户)
+                  * [认领应用](#认领应用)
+                  * [生成token](#生成token)
 
 ## 项目概述
 
@@ -425,26 +416,7 @@ Facebook 营销API中提供了很多接口可以解决目前投放中遇到的�
 
 ##### 广告账户、应用列表
 
-- 上传广告账户、应用流程图
-
-![账号上传逻辑](./img/账号上传逻辑.png)
-
-
-- 原型图
-
-原型图在需求文档根目录中
-
-- 流程
-
-1.运营维护广告账号、应用编号、应用密钥，点击提交
-
-2.提交后前端发送给后端，后端接收到使用应用和密钥组成的app token，发送一个创建Campaign的请求，创建成功后返回Campaign ID，用此ID创建一个Adset，创建成功则意味着广告账户和应用有关联。将这个关联关系储存进广告账户、应用列表；如果创建失败，直接前端返回失败提示：“错误！此广告账户和应用没有关联！”
-
-3.运营批量创建广告，填写基本信息的时候选择账号，选择完应用后，后端返回与这个账号关联的应用列表给运营选择。
-
-- 需要预留的点
-
-广告账户、应用的列表可以通过Facebook Bussiness Manager平台的API拉取，关联关系不清楚能不能拉取，这个BM平台目前只有user权限，user权限只能拉取列表，不能新增账号、应用，所以一期选择用手动维护的方式。能够新增账号、应用的Admin权限正在申请中，所以需要给这个自动拉取功能预留空间。
+列表通过Business Manger API拉取，具体方法可以参考[参考文档]()或需求文档附录中【Business Manager】一节。
 
 
 
@@ -462,34 +434,28 @@ json结构需要前后端协商制定。
 
 ###### json字段表
 
-| 层级 | 字段名称（key)            | 字段值（value)                       | 字段类型 |
-| ---- | ------------------------- | ------------------------------------ | -------- |
-| 1    | AD_ACCOUNT_ID             | 账号编号                             | string   |
-| 1    | APP_ID                    | 应用编号                             | int      |
-| 1    | Campaign_info             | Campaign信息构成的字典               | dict     |
-| 2    | 生成的Campaign名称        | 对应Campaign信息构成的字典           | dict     |
-| 3    | Adset_info                | Adset信息构成的字典                  | dict     |
-| 4    | 生成的Adset名称           | 对应Adset信息构成的字典              | dict     |
-| 5    | AdSet_bid_amount          | 对应广告组的出价                     | float    |
-| 5    | AdSet_daily_budget        | 对应广告组的单日预算                 | int      |
-| 5    | AdSet_pacing_type         | 对应广告组的加速状态                 | string   |
-| 5    | AdSet_targeting:country   | 对应广告组的目标国家（单选国家情况） | string   |
-| 5    | AdSet_targeting:countries | 对应广告组的目标国家（多选国家情况） | list     |
-| 5    | AdSet_targeting:rule      | 自定义受众：除了安装关联应用的受众   | string   |
-| 5    | Ad_info                   | Ad信息构成的字典                     | dict     |
-| 6    | 生成的Ad名称              | 对应Ad信息构成的字典                 | dict     |
-| 7    | Ad_title                  | 运营填写的标题（会有多语言）         | string   |
-| 7    | Ad_text                   | 运营填写的文案（会有多语言）         | string   |
-| 7    | Ad_image_id               | Facebook素材库中的图片编号           | string   |
-| 7    | Ad_video_id               | Facebook素材库中的视频编号           | string   |
-| 7    | Ad_cover_id               | Facebook素材库中的封面图编号         | string   |
-| 7    | Ad_app_link               | 关联应用的Google play链接            | string   |
-
-
-
-###### json示例
-
-在需求文档根目录中。
+| 字段名称（key)            | 字段值（value)                       | 字段类型 |
+| ------------------------- | ------------------------------------ | -------- |
+| AD_ACCOUNT_ID             | 账号编号                             | string   |
+| APP_ID                    | 应用编号                             | int      |
+| Campaign_info             | Campaign信息构成的字典               | dict     |
+| 生成的Campaign名称        | 对应Campaign信息构成的字典           | dict     |
+| Adset_info                | Adset信息构成的字典                  | dict     |
+| 生成的Adset名称           | 对应Adset信息构成的字典              | dict     |
+| AdSet_bid_amount          | 对应广告组的出价                     | float    |
+| AdSet_daily_budget        | 对应广告组的单日预算                 | int      |
+| AdSet_pacing_type         | 对应广告组的加速状态                 | string   |
+| AdSet_targeting:country   | 对应广告组的目标国家（单选国家情况） | string   |
+| AdSet_targeting:countries | 对应广告组的目标国家（多选国家情况） | list     |
+| AdSet_targeting:rule      | 自定义受众：除了安装关联应用的受众   | string   |
+| Ad_info                   | Ad信息构成的字典                     | dict     |
+| 生成的Ad名称              | 对应Ad信息构成的字典                 | dict     |
+| Ad_title                  | 运营填写的标题（会有多语言）         | string   |
+| Ad_text                   | 运营填写的文案（会有多语言）         | string   |
+| Ad_image_id               | Facebook素材库中的图片编号           | string   |
+| Ad_video_id               | Facebook素材库中的视频编号           | string   |
+| Ad_cover_id               | Facebook素材库中的封面图编号         | string   |
+| Ad_app_link               | 关联应用的Google   play链接          | string   |
 
 
 
@@ -506,7 +472,7 @@ json结构需要前后端协商制定。
 
 ###### 创建所需字段处理方法
 
-这里是我看参考文档总结出来的创建所需字段，包括了一部分写死的字段。
+创建所需字段，包括了一部分写死的字段的处理方法。
 
 | 创建层级              | 所需字段                        | 含义                         | 字段来源                                | 参考文档 |
 | --------------------- | ------------------------------- | ---------------------------- | --------------------------------------- | --------------------------------------- |
@@ -569,30 +535,6 @@ json结构需要前后端协商制定。
 
 ##### 素材上传&使用
 
-###### 本地上传
-
-选择应用、类型之后上传，上传时在文件名前加上类型的前缀。
-
-| 类型 | 前缀 |
-| ---- | ---- |
-| 图片 | Photo_ |
-| 视频 | Video_ |
-| 封面图 | Cover_ |
-
-> 例：
->
-> 上传的本地文件名：1.jpg
->
-> 储存在服务器上的文件名：Photo_1.jpg
-
-
-
-###### 上传到Facebook服务器
-
-运营上传素材后，将素材上传到Facebook服务器，获得素材id，将文件和素材id一一对应。
-
-
-
 ###### 素材使用
 
 当选择定好关联方式时，调出素材库选择界面，只需要展示对应的类型。（关联方式选择图片时，默认拉取当前选择应用的图片，同时界面上也有选择其他应用的选项，但是不能选择其他的类型）
@@ -607,7 +549,7 @@ json结构需要前后端协商制定。
 
 ###### 素材库管理
 
-第一期暂时只将素材库做成一级的结构，第二级的结构是通过文件名命名规则来实现的。
+素材库
 
 只有上传的入口，没有删查减的入口。
 
@@ -619,7 +561,7 @@ json结构需要前后端协商制定。
 
 - 第二级
 
-以文件名来区分（图片、视频、封面图）的文件
+以类型区分的文件夹，类型有Video\Photo\Cover三种
 
 
 
@@ -652,8 +594,6 @@ json结构需要前后端协商制定。
   单击列名可以对该列进行排序
 
 ##### 原型图
-
-原型图在需求文档同目录中
 
 
 
@@ -694,7 +634,7 @@ Facebook 会在成效分析指标或对象元数据字段出现变化时评估�
 
 ### 账号管理
 
-1.0暂时先手动维护FB账号和token，后续拿到商务管理平台的admin token后会改成通过API拉取。
+创建所需的账号、应用、token都通过Business Manager API来拉取，
 
 #### 账号上传
 
@@ -707,154 +647,7 @@ Facebook 会在成效分析指标或对象元数据字段出现变化时评估�
 
 
 ## 附录
-
-#### 国家代码转换规则
-
-| 国家                 | 代码 |
-| -------------------- | ---- |
-| 阿尔巴尼亚           | AL   |
-| 阿尔及利亚           | DZ   |
-| 阿根廷               | AR   |
-| 阿拉伯联合酋长国     | AE   |
-| 阿鲁巴               | AW   |
-| 阿曼                 | OM   |
-| 阿塞拜疆             | AZ   |
-| 埃及                 | EG   |
-| 爱尔兰               | IE   |
-| 爱沙尼亚             | EE   |
-| 安哥拉               | AO   |
-| 奥地利               | AT   |
-| 澳大利亚             | AU   |
-| 巴布亚新几内亚       | PG   |
-| 巴哈马               | BS   |
-| 巴基斯坦             | PK   |
-| 巴拉圭               | PY   |
-| 巴拿马               | PA   |
-| 巴西                 | BR   |
-| 白俄罗斯             | BY   |
-| 保加利亚             | BG   |
-| 比利时               | BE   |
-| 冰岛                 | IS   |
-| 波多黎各             | PR   |
-| 波兰                 | PL   |
-| 波斯尼亚和黑塞哥维那 | BA   |
-| 玻利维亚             | BO   |
-| 伯利兹               | BZ   |
-| 博茨瓦纳             | BW   |
-| 布基纳法索           | BF   |
-| 丹麦                 | DK   |
-| 德国                 | DE   |
-| 多哥                 | TG   |
-| 俄罗斯               | RU   |
-| 厄瓜多尔             | EC   |
-| 法国                 | FR   |
-| 菲律宾               | PH   |
-| 芬兰                 | FI   |
-| 佛得角               | CV   |
-| 哥伦比亚             | CO   |
-| 哥斯达黎加           | CR   |
-| 海地                 | HT   |
-| 韩国                 | KR   |
-| 荷兰                 | NL   |
-| 洪都拉斯             | HN   |
-| 几内亚比绍           | GW   |
-| 加拿大               | CA   |
-| 加纳                 | GH   |
-| 加蓬                 | GA   |
-| 柬埔寨               | KH   |
-| 捷克                 | CZ   |
-| 津巴布韦             | ZW   |
-| 喀麦隆               | CM   |
-| 卡塔尔               | QA   |
-| 科威特               | KW   |
-| 克罗地亚             | HR   |
-| 肯尼亚               | KE   |
-| 拉脱维亚             | LV   |
-| 老挝                 | LA   |
-| 黎巴嫩               | LB   |
-| 立陶宛               | LT   |
-| 卢森堡               | LU   |
-| 罗马尼亚             | RO   |
-| 马耳他               | MT   |
-| 马来西亚             | MY   |
-| 马里                 | ML   |
-| 马其顿               | MK   |
-| 毛里求斯             | MU   |
-| 美国                 | US   |
-| 孟加拉国             | BD   |
-| 秘鲁                 | PE   |
-| 缅甸                 | MM   |
-| 摩尔多瓦             | MD   |
-| 摩洛哥               | MA   |
-| 莫桑比克             | MZ   |
-| 墨西哥               | MX   |
-| 纳米比亚             | NA   |
-| 南非                 | ZA   |
-| 尼泊尔               | NP   |
-| 尼加拉瓜             | NI   |
-| 尼日尔               | NE   |
-| 尼日利亚             | NG   |
-| 挪威                 | NO   |
-| 葡萄牙               | PT   |
-| 日本                 | JP   |
-| 瑞典                 | SE   |
-| 瑞士                 | CH   |
-| 萨尔瓦多             | SV   |
-| 塞内加尔             | SN   |
-| 塞浦路斯             | CY   |
-| 沙特阿拉伯           | SA   |
-| 斯里兰卡             | LK   |
-| 斯洛伐克             | SK   |
-| 斯洛文尼亚           | SI   |
-| 塔吉克斯坦           | TJ   |
-| 台湾                 | TW   |
-| 泰国                 | TH   |
-| 坦桑尼亚             | TZ   |
-| 特立尼达和多巴哥     | TT   |
-| 突尼斯               | TN   |
-| 土耳其               | TR   |
-| 土库曼斯坦           | TM   |
-| 危地马拉             | GT   |
-| 委内瑞拉             | VE   |
-| 乌干达               | UG   |
-| 乌克兰               | UA   |
-| 乌拉圭               | UY   |
-| 乌兹别克斯坦         | UZ   |
-| 西班牙               | ES   |
-| 希腊                 | GR   |
-| 香港                 | HK   |
-| 新加坡               | SG   |
-| 新西兰               | NZ   |
-| 匈牙利               | HU   |
-| 牙买加               | JM   |
-| 亚美尼亚             | AM   |
-| 也门                 | YE   |
-| 伊拉克               | IQ   |
-| 伊朗                 | IR   |
-| 以色列               | IL   |
-| 意大利               | IT   |
-| 印度                 | IN   |
-| 印尼                 | ID   |
-| 英国                 | UK   |
-| 约旦                 | JO   |
-| 越南                 | VN   |
-| 赞比亚               | ZM   |
-| 智利                 | CL   |
-| 中国                 | CN   |
-
-### 账号&Token信息
-
-#### 账号信息
-
-账号信息批量创建时手动填写
-
-#### 应用信息
-
-应用信息批量创建时手动填写
-
-#### Token
-
-##### Facebook平台token架构
+##### Token获得方式
 
 ![long_live_token_generate](./img/long_live_token_generate.png)
 
@@ -882,32 +675,7 @@ GET /oauth/access_token?
 
 目前我们有的是BM平台System user级别的权限，可以用来拉取关联项目下的账号、应用列表，出于安全原因不写在这，需要的话找我要。
 
-Admin权限的token正在协调申请中，申请好了之后可以通过Admin access token完成新应用、账号关联等操作。
-
 [BM平台管理参考文档](https://developers.facebook.com/docs/marketing-api/businessmanager/assets)
-
-[通过user权限获取app token](https://developers.facebook.com/docs/marketing-api/businessmanager/systemuser/?translation#generate-token)
-
-
-
-###### 新增账户
-
-如果您以“管理员”身份管理商务管理平台以外的广告帐户，可以为平台认领这些帐户。这是一次性程序。您认领广告帐户后，只能在商务管理平台管理这些广告帐户。
-
-如要为平台认领广告帐户，请提供格式为 `act_###` 的广告帐户编号。发送 `POST` 请求：
-
-```
-curl \
--F "adaccount_id=act_<AD_ACCOUNT_ID>" \
--F "access_token=<ACCESS_TOKEN>" \
-"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/owned_ad_accounts"
-```
-
-如果您是广告帐户的管理员，我们会立即批准此认领请求。Facebook 会返回设为 `CONFIRMED` 的 `access_status`。
-
-如果您是**对广告帐户没有适当权限**的用户，我们会向广告帐户管理员发送所有权请求。在我们发送该请求后，响应会包含设置为 `PENDING` 的 `access_status`。
-
-要接受所有权请求，您必须是广告帐户管理员，而且应在广告管理工具中登录并接受请求。
 
 
 
@@ -937,20 +705,45 @@ curl -G \
 
 这会返回一列与商务管理平台关联的应用。
 
-如要查看平台有权访问的所有客户应用程序，或您已请求访问但等待批准的客户应用程序：
+
+
+###### 认领账户
+
+如果您以“管理员”身份管理商务管理平台以外的广告帐户，可以为平台认领这些帐户。这是一次性程序。您认领广告帐户后，只能在商务管理平台管理这些广告帐户。
+
+如要为平台认领广告帐户，请提供格式为 `act_###` 的广告帐户编号。发送 `POST` 请求：
 
 ```
-curl -G \
--d "access_token=<ACCESS_TOKEN>" \
-"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/client_apps"
+curl \
+-F "adaccount_id=act_<AD_ACCOUNT_ID>" \
+-F "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/owned_ad_accounts"
 ```
 
-```
-curl -G \
--d "access_token=<ACCESS_TOKEN>" \
-"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/pending_client_apps"
-```
+如果您是广告帐户的管理员，我们会立即批准此认领请求。Facebook 会返回设为 `CONFIRMED` 的 `access_status`。
 
-响应包含 `permitted_roles`。这是您可为该特定广告帐户分配的一组身份。
+如果您是**对广告帐户没有适当权限**的用户，我们会向广告帐户管理员发送所有权请求。在我们发送该请求后，响应会包含设置为 `PENDING` 的 `access_status`。
+
+要接受所有权请求，您必须是广告帐户管理员，而且应在广告管理工具中登录并接受请求。
+
+
+
+###### 认领应用
+
+Facebook文档中，有提到认领应用的功能，但是没有具体的命令，正在跟FB的人交流中。
+
+
+
+###### 生成token
+
+[通过user权限获取app token](https://developers.facebook.com/docs/marketing-api/businessmanager/systemuser/?translation#generate-token)
+
+
+
+
+
+
+
+
 
 
