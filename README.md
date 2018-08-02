@@ -70,7 +70,7 @@
 
 ### 需求背景
 
-在日常的投放中发现并Facebook的人确认过后，确定在FB投放的每个广告和素材都能拿到一定的基础展示，所以想用自动化的手段来增加素材、广告的数量级，目的是增加投放展示。
+在日常的投放中发现并Facebook的人确认过后，确定在FB投放的每个广告和素材都能拿到一定的基础展示，所以想用自动化的手段来增加素材、广告的数量，目的是增加投放展示。
 
 Facebook 营销API中提供了很多接口可以解决目前投放中遇到的问题（如批量创建、数据管理等）、提高投放的效率（自动投放），所以需要一个后台系统来调用API。
 
@@ -206,7 +206,7 @@ Facebook 营销API中提供了很多接口可以解决目前投放中遇到的�
 
 选择本次创建要使用的广告账户，以及关联的应用。
 
-选择广告账户，选择账户后后端返回与广告账户关联的应用。
+账号、应用列表从后端拉取。
 
 
 
@@ -241,6 +241,7 @@ Facebook 营销API中提供了很多接口可以解决目前投放中遇到的�
 ###### 新建模板
 
 ```flow
+此处缺个流程图
 st=>start: 输入模板名称
 campaign=>operation: 输入广告系列名称
 adset_info=>operation: 输入所属的广告组信息
@@ -650,12 +651,14 @@ Facebook 会在成效分析指标或对象元数据字段出现变化时评估�
 
 ### 账号管理
 
-创建所需的账号、应用、token都通过Business Manager API来拉取，
+创建所需的账号、应用、token都通过Business Manager API来拉取。
+
+后期会加上账号权限管理这一块，这一期实现拉取功能即可。
 
 
 
 ## 附录
-### Token获得方式
+### Token手动获得方式
 
 ![long_live_token_generate](./img/long_live_token_generate.png)
 
@@ -675,12 +678,18 @@ GET /oauth/access_token?
 
 [参考文档](https://developers.facebook.com/docs/facebook-login/access-tokens/)
 
+自动获取token请参考【Business Manager平台】这一节的内容。
+
+
+
 
 ### Business Manager平台
 
 ![bm_token](./img/bm_token.png)
 
-目前我们有的是BM平台System user级别的权限，可以用来拉取关联项目下的账号、应用列表，出于安全原因不写在这，需要的话找我要。
+Business Manager平台的功能是管理资产，资产包括广告账户、应用等，可以通过Business manager API来拉取应用、账号列表，以及对于的token。
+
+目前我们有的是BM平台admin和System user级别的token，admin token用于权限分配，system user token用于实际api调用。出于安全原因不写在这，需要的话找我要。
 
 [BM平台管理参考文档](https://developers.facebook.com/docs/marketing-api/businessmanager/assets)
 
@@ -709,31 +718,9 @@ curl -G \
 
 这会返回一列与商务管理平台关联的应用。
 
-
-#### 认领账户
-
-如果您以“管理员”身份管理商务管理平台以外的广告帐户，可以为平台认领这些帐户。这是一次性程序。您认领广告帐户后，只能在商务管理平台管理这些广告帐户。
-
-如要为平台认领广告帐户，请提供格式为 `act_###` 的广告帐户编号。发送 `POST` 请求：
-
-```
-curl \
--F "adaccount_id=act_<AD_ACCOUNT_ID>" \
--F "access_token=<ACCESS_TOKEN>" \
-"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/owned_ad_accounts"
-```
-
-如果您是广告帐户的管理员，我们会立即批准此认领请求。Facebook 会返回设为 `CONFIRMED` 的 `access_status`。
-
-如果您是**对广告帐户没有适当权限**的用户，我们会向广告帐户管理员发送所有权请求。在我们发送该请求后，响应会包含设置为 `PENDING` 的 `access_status`。
-
-要接受所有权请求，您必须是广告帐户管理员，而且应在广告管理工具中登录并接受请求。
-
-
 #### 认领应用
 
-Facebook文档中，有提到认领应用的功能，但是没有具体的命令，正在跟FB的人交流中。
-
+Facebook文档中，有提到认领应用的功能，但是没有具体的命令，正在跟FB的人交流中。没有认领应用的命令的话，会通过手动添加完成，现在白牌所需的应用已经都关联到了白牌项目下。
 
 #### 生成token
 
@@ -741,10 +728,159 @@ Facebook文档中，有提到认领应用的功能，但是没有具体的命令
 
 
 
+#### 项目
+
+按照逻辑分组来组织商务管理平台的资产，例如广告帐户、主页、应用。项目更便于您浏览商务管理平台的层级。您可以用项目管理多个经销商和客户拥有的资产。每个资产只能有一个标签。
+
+如要创建商务管理平台项目，您必须在 `POST` 请求中指定 `name`。
+
+```
+curl \
+-F "name=Test label" \
+-F "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/businessprojects"
+```
+
+您可以通过 `GET` 请求查看商务管理平台帐户下的所有标签：
+
+```
+curl -G \
+-d "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/businessprojects"
+```
+
+ 查看商务管理平台中的项目
+
+您可通过发出此 GET 调用查看项目的详情：
+
+```
+curl -G \
+-d "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<PROJECT_ID>"
+```
+
+
+
+##### 项目的广告帐户
+
+您可发出以下 POST 调用为项目添加广告帐户：
+
+```
+curl \
+-F "adaccount_id=act_<ADACCOUNT_ID>" \
+-F "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<PROJECT_ID>/adaccounts"
+```
+
+您可发出以下 GET 调用查看某个项目下的所有广告帐户：
+
+```
+curl -G \
+-d "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<PROJECT_ID>/adaccounts"
+```
+
+您可发出以下 DELETE 调用从项目移除广告帐户：
+
+```
+curl -X DELETE \
+-F "adaccount_id=act_<AD_ACCOUNT_ID>" \
+-F "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<PROJECT_ID>/adaccounts"
+```
+
+##### 项目的应用
+
+您可发出以下 POST 调用为项目添加应用：
+
+```
+curl \
+-F "app_id=<PAGE_ID>" \
+-F "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<PROJECT_ID>/apps"
+```
+
+您可发出以下 GET 调用来查看某个项目下的所有应用：
+
+```
+curl -G \
+-d "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<PROJECT_ID>/apps"
+```
+
+您可发出以下 DELETE 调用从项目中移除应用：
+
+```
+curl -X DELETE \
+-F "app_id=<PAGE_ID>" \
+-F "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<PROJECT_ID>/apps"
+```
+
+
+
+#### 给用户分配广告账户
+
+之后的功能中可能会加入对于账号权限管理的部分，先将参考文档贴在这。
+
+##### 管理用户和身份
+
+商务管理平台中有两种类型的身份：
+
+| 名称     | API 常量   | 说明                                                         |
+| -------- | ---------- | ------------------------------------------------------------ |
+| 管理员   | `ADMIN`    | 可以管理商务管理平台的各个方面，包括修改或删除帐户、为工作人员列表添加或移除用户。对商务管理平台关联的全部资产拥有 `READ` 和 `WRITE` 访问权限。 |
+| 工作人员 | `EMPLOYEE` | 可以查看商务管理平台设置中的所有信息，且可由商务管理平台管理员分配身份。不能进行任何更改，只能将自己担任管理员的主页或广告帐户添加到商务管理平台中。对商务管理平台关联的全部资产拥有 `READ` 访问权限。 |
+
+ 如要了解有关身份的更多信息，请参阅[在商务管理平台中设置目录身份](https://www.facebook.com/business/help/1953352334878186)。
+
+
+
+##### 邀请用户
+
+如需将同事添加到商务管理平台，您必须邀请他们。发出邀请时，请提供他们能使用的有效邮箱。**发送在商务管理平台添加工作人员的请求有数量限制。当您达到此限制时，将收到错误代码 17，但在 24 小时后应能再次发送请求。**
+
+如要邀请用户担任工作人员，请发送以下 `POST` 请求：
+
+```
+curl \
+-F "email=some@email.com" \
+-F "role=EMPLOYEE" \
+-F "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<BUSINESS_ID>/business_users"
+```
+
+Facebook 会向您指定的工作邮箱发送一封邀请邮件。被邀请人必须查收邮件，并按照注册流程操作。他们完成操作后，您便可在用户列表中看到他们。
+
+注意：如果邮件接收不到的话，在 `POST` 请求返回的结果中有邀请链接；
 
 
 
 
+##### 添加用户到帐户
 
+在您的商务管理平台具有广告帐户后，您现在可以分配平台上的其他用户身份，如下所示：
 
+| 名称     | API 常量       | 说明                                                         |
+| -------- | -------------- | ------------------------------------------------------------ |
+| 仅报告   | `REPORTS_ONLY` | 可以查看广告表现                                             |
+| 一般用户 | `GENERAL_USER` | 可以查看和编辑广告，并使用与广告帐户相关联的资金源设置广告，但不能设置帐户级别 |
+| 管理员   | `ADMIN`        | 可以管理广告系列、报告、账单和帐户权限的各个方面             |
 
+您需要：
+
+- `adaccount_id`：广告帐户编号（格式为 `act_123`）
+- `user_id`：要添加的用户编号
+- 要分配的身份
+
+如要添加新用户作为管理员，请发出以下 `POST` 调用：
+
+```
+curl \
+-F "user=BUSINESS_SCOPED_USER_ID" \
+-F "role=ADMIN" \
+-F "access_token=ACCESS_TOKEN" \
+"https://graph.facebook.com/VERSION/act_AD_ACCOUNT_ID/assigned_users"
+```
+
+ 
