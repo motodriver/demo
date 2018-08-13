@@ -668,7 +668,7 @@ Facebook 会在成效分析指标或对象元数据字段出现变化时评估�
 
 ##### 流程图
 
-![Untitled Diagram (3)](.img/Untitled Diagram (3).png)
+![Untitled Diagram (3)](./img/Untitled Diagram (3).png)
 
 ##### 广告规则判断值
 
