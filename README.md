@@ -945,7 +945,7 @@ Facebook 会在成效分析指标或对象元数据字段出现变化时评估�
 
 - 参考设计
 
-[参考设计](https://motodriver.github.io/demo/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E5%9E%8B%E5%9B%BE/img/%E7%95%8C%E9%9D%A2%E8%AE%BE%E8%AE%A1/%E5%8F%82%E8%80%83%E8%AE%BE%E8%AE%A1.jpg)
+[参考设计](https://github.com/motodriver/demo/blob/master/img/%E7%95%8C%E9%9D%A2%E8%AE%BE%E8%AE%A1/%E5%8F%82%E8%80%83%E9%A3%8E%E6%A0%BC.jpg)
 
 
 
