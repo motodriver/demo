@@ -158,6 +158,12 @@ impression：当天所有广告所拿到的展示量之和
 
 
 
+## 使用手册
+
+[使用手册链接](https://github.com/motodriver/demo/blob/master/%E6%B5%81%E5%B7%9D%E6%9E%AB%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3.md)
+
+
+
 ## 功能需求
 
 ### 创建
