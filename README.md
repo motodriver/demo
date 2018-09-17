@@ -796,21 +796,25 @@ json结构需要前后端协商制定。
 
 ![成效数据](./img/界面设计/成效数据.png)
 
+[UX设计图地址](https://lanhuapp.com/web/#/item/board/detail?pid=43848a00-f61b-463e-8fe0-2af092d125ae&project_id=43848a00-f61b-463e-8fe0-2af092d125ae&image_id=961f4d7e-1862-439e-8197-764a8a181ec6)
+
+首次使用需先注册[注册地址](https://lanhuapp.com/url/hACPu)
+
+
+
 ##### 数据可视化功能点
 
 - 账号、Campaign、Adset、Ad四个层级的广告数据趋势查看
 
 > 数据查看流程：**选择层级->选择目标->选择时间段->查看数据趋势->选择数据列**
 >
-> 所需数据可以直接通过接口拉取
-
-
+> 这四个层级的数据可以通过可视化表格来查看，同时会显示在表格中
 
 - 每个层级都支持按照细分受众（按照年龄、性别、国家等维度）查看数据
 
-> 所需数据可以直接通过接口拉取
-
-
+> 所需数据可以直接通过API拉取
+>
+> 细分数据通过表格形式查看，不能通过
 
 - 每个层级的ROI体现（可选）
 
@@ -822,13 +826,9 @@ json结构需要前后端协商制定。
 
 ##### 表格数据功能点
 
-- 默认排序
-
-       按照下载量（成效）排序
-
 - 数据筛选
 
-  可以对每一个数值列进行区间筛选（规定展示的最小值和最大值区间）
+   可以对每一个数值列进行区间筛选（规定展示的最小值和最大值区间）
 
 - 数据排序
 
@@ -845,9 +845,69 @@ json结构需要前后端协商制定。
 
 ##### 后端需求
 
-- 拉取数据接口
+- 拉取广告列表接口
 
-- ROI计算
+1、拉取广告账户列表（已完成）
+
+2、拉取广告系列列表
+
+[参考文档](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group)
+
+3、拉取广告组列表
+
+[读取广告系列下所有广告组](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group/adsets/)
+
+
+
+
+
+4、拉取广告列表
+
+
+
+- 拉取成效数据接口
+
+拉取成效数据（账号、广告系列、广告组、广告以及细分数据）
+
+[成效拉取文档地址](https://developers.facebook.com/docs/marketing-api/insights?locale=zh_CN)
+
+要获取Campaign在过去 7 天内的表现统计数据：
+
+```sh
+curl -G \
+-d "date_preset=last_7_days" \
+-d "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<AD_CAMPAIGN_ID>/insights"
+```
+
+您可以在 `fields`（字段）参数中使用逗号分隔列表，请求多个特定[字段](https://developers.facebook.com/docs/marketing-api/insights/fields)的数据：
+
+```code
+curl -G \
+-d "fields=impressions" \
+-d "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<AD_OBJECT_ID>/insights"
+```
+
+
+
+- 拉取细分成效数据接口
+
+[拉取细分数据文档](https://developers.facebook.com/docs/marketing-api/insights/breakdowns)
+
+下列调用会按照 `age` 和 `gender` 将结果分组。
+
+```sh
+curl -G \
+-d "breakdowns=age,gender" \
+-d "fields=impressions" \
+-d "access_token=<ACCESS_TOKEN>" \
+"https://graph.facebook.com/<API_VERSION>/<AD_CAMPAIGN_ID>/insights"
+```
+
+- 参数和字段
+
+[参数和字段参考文档](https://developers.facebook.com/docs/marketing-api/insights/parameters?locale=zh_CN)，内有所有可用的参数与字段的列表。
 
 
 
