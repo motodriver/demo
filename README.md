@@ -859,11 +859,9 @@ json结构需要前后端协商制定。
 
 [读取广告系列下所有广告组](https://developers.facebook.com/docs/marketing-api/reference/ad-campaign-group/adsets/)
 
-
-
-
-
 4、拉取广告列表
+
+
 
 
 
@@ -890,6 +888,8 @@ curl -G \
 -d "access_token=<ACCESS_TOKEN>" \
 "https://graph.facebook.com/<API_VERSION>/<AD_OBJECT_ID>/insights"
 ```
+
+
 
 
 
