@@ -922,6 +922,99 @@ curl -G \
 
 
 
+#### 广告标签（分应用查看数据）
+
+##### 需求背景
+
+因为Facebook API&后台不支持按照应用查看数据，但是在运营日常中十分需要按照应用查看数据，所以需要用Adlabel来给广告对象增加一个字段，用于调用分应用查看的数据。
+
+
+
+##### 原型图
+
+[原型图链接]()
+
+
+
+##### 逻辑
+![Untitled Diagram (14)](/Users/lee/Downloads/Untitled Diagram (14).png)
+
+
+
+##### 命令示例
+
+- 1.创建广告标签
+
+需要注意的时，广告标签不能跨账号调用，A账号下创建的广告标签，只能关联到A账号的广告对象
+
+```sh
+curl \
+  -F 'name=AdLabel name' \
+  -F 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/adlabels
+```
+
+- 2.将广告对象关联到广告标签上
+
+将现有标签与广告等现有广告对象相关联：
+
+此端点会覆盖与此对象关联的所有标签集，而<OBJECT_ID> / adlabels会修改（添加新的或重复使用的指定）。如果仅提供标签名称，并且名称不存在标签，则会创建新标签，然后将其与广告对象关联。
+
+```sh
+curl \
+  -F 'adlabels=[{"id":"<AD_LABEL_ID>"},{"name":"<AD_LABEL_NAME>"}]' \
+  -F 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/<AD_ID>
+```
+
+- 3.调用数据
+
+调用某个账号下某个标签的数据
+
+名称过滤：
+
+```sh
+curl -G \
+  -d 'level=ad' \
+  --data-urlencode 'filtering=[ 
+    { 
+      "field": "adgroup.adlabels", 
+      "operator": "ANY", 
+      "value": ["<AD_LABEL_NAME>"] 
+    } 
+  ]' \
+  -d 'time_range={"since":"2015-03-01","until":"2015-03-31"}' \
+  -d 'fields=inline_link_clicks,cost_per_inline_link_click,total_actions' \
+  -d 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/insights
+```
+
+按ID过滤：
+
+```sh
+curl -G \
+  -d 'level=ad' \
+  --data-urlencode 'filtering=[ 
+    { 
+      "field": "adgroup.adlabel_ids", 
+      "operator": "ANY", 
+      "value": ["<AD_LABEL_ID>"] 
+    } 
+  ]' \
+  -d 'time_range={"since":"2015-03-01","until":"2015-03-31"}' \
+  -d 'fields=inline_link_clicks,cost_per_inline_link_click,total_actions' \
+  -d 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/insights
+```
+
+
+
+##### 广告&应用关系表样式
+
+
+
+
+
 #### 投放规则
 
 广告规则是在广告规则库中创建和存储的独立对象，至少包含一个 `name`、一个 `evaluation_spec` 和一个 `execution_spec`。规则的基本架构如下所示：
