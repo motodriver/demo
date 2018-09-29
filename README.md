@@ -932,84 +932,12 @@ curl -G \
 
 ##### 原型图
 
-[原型图链接]()
+[原型图链接](https://motodriver.github.io/demo/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E5%9E%8B%E5%9B%BE/%E5%85%B3%E8%81%94%E6%A0%87%E7%AD%BE.html)
 
 
 
 ##### 逻辑
-![Untitled Diagram (14)](/Users/lee/Downloads/Untitled Diagram (14).png)
-
-
-
-##### 命令示例
-
-- 1.创建广告标签
-
-需要注意的时，广告标签不能跨账号调用，A账号下创建的广告标签，只能关联到A账号的广告对象
-
-```sh
-curl \
-  -F 'name=AdLabel name' \
-  -F 'access_token=<ACCESS_TOKEN>' \
-  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/adlabels
-```
-
-- 2.将广告对象关联到广告标签上
-
-将现有标签与广告等现有广告对象相关联：
-
-此端点会覆盖与此对象关联的所有标签集，而<OBJECT_ID> / adlabels会修改（添加新的或重复使用的指定）。如果仅提供标签名称，并且名称不存在标签，则会创建新标签，然后将其与广告对象关联。
-
-```sh
-curl \
-  -F 'adlabels=[{"id":"<AD_LABEL_ID>"},{"name":"<AD_LABEL_NAME>"}]' \
-  -F 'access_token=<ACCESS_TOKEN>' \
-  https://graph.facebook.com/v3.1/<AD_ID>
-```
-
-- 3.调用数据
-
-调用某个账号下某个标签的数据
-
-名称过滤：
-
-```sh
-curl -G \
-  -d 'level=ad' \
-  --data-urlencode 'filtering=[ 
-    { 
-      "field": "adgroup.adlabels", 
-      "operator": "ANY", 
-      "value": ["<AD_LABEL_NAME>"] 
-    } 
-  ]' \
-  -d 'time_range={"since":"2015-03-01","until":"2015-03-31"}' \
-  -d 'fields=inline_link_clicks,cost_per_inline_link_click,total_actions' \
-  -d 'access_token=<ACCESS_TOKEN>' \
-  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/insights
-```
-
-按ID过滤：
-
-```sh
-curl -G \
-  -d 'level=ad' \
-  --data-urlencode 'filtering=[ 
-    { 
-      "field": "adgroup.adlabel_ids", 
-      "operator": "ANY", 
-      "value": ["<AD_LABEL_ID>"] 
-    } 
-  ]' \
-  -d 'time_range={"since":"2015-03-01","until":"2015-03-31"}' \
-  -d 'fields=inline_link_clicks,cost_per_inline_link_click,total_actions' \
-  -d 'access_token=<ACCESS_TOKEN>' \
-  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/insights
-```
-
-
-
-##### 广告&应用关系表样式
+![广告标签](./img/广告标签.png)
 
 
 
@@ -1331,4 +1259,74 @@ curl \
 "https://graph.facebook.com/VERSION/act_AD_ACCOUNT_ID/assigned_users"
 ```
 
- 
+
+
+##### 广告标签
+
+- 1.创建广告标签
+
+需要注意的时，广告标签不能跨账号调用，A账号下创建的广告标签，只能关联到A账号的广告对象
+
+```sh
+curl \
+  -F 'name=AdLabel name' \
+  -F 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/adlabels
+```
+
+- 2.将广告对象关联到广告标签上
+
+将现有标签与广告等现有广告对象相关联：
+
+此端点会覆盖与此对象关联的所有标签集，而<OBJECT_ID> / adlabels会修改（添加新的或重复使用的指定）。如果仅提供标签名称，并且名称不存在标签，则会创建新标签，然后将其与广告对象关联。
+
+```sh
+curl \
+  -F 'adlabels=[{"id":"<AD_LABEL_ID>"},{"name":"<AD_LABEL_NAME>"}]' \
+  -F 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/<AD_ID>
+```
+
+- 3.调用数据
+
+调用某个账号下某个标签的数据
+
+名称过滤：
+
+```sh
+curl -G \
+  -d 'level=ad' \
+  --data-urlencode 'filtering=[ 
+    { 
+      "field": "adgroup.adlabels", 
+      "operator": "ANY", 
+      "value": ["<AD_LABEL_NAME>"] 
+    } 
+  ]' \
+  -d 'time_range={"since":"2015-03-01","until":"2015-03-31"}' \
+  -d 'fields=inline_link_clicks,cost_per_inline_link_click,total_actions' \
+  -d 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/insights
+```
+
+按ID过滤：
+
+```sh
+curl -G \
+  -d 'level=ad' \
+  --data-urlencode 'filtering=[ 
+    { 
+      "field": "adgroup.adlabel_ids", 
+      "operator": "ANY", 
+      "value": ["<AD_LABEL_ID>"] 
+    } 
+  ]' \
+  -d 'time_range={"since":"2015-03-01","until":"2015-03-31"}' \
+  -d 'fields=inline_link_clicks,cost_per_inline_link_click,total_actions' \
+  -d 'access_token=<ACCESS_TOKEN>' \
+  https://graph.facebook.com/v3.1/act_<AD_ACCOUNT_ID>/insights
+```
+
+
+
+##### 
