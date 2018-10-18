@@ -837,6 +837,8 @@ curl -G \
 ##### 逻辑
 ![广告标签](./img/广告标签.png)
 
+
+
 #### Google 投放数据
 
 ##### 需求背景
@@ -845,7 +847,25 @@ curl -G \
 
 ##### 原型图
 
+[谷歌投放数据接入原型图](https://motodriver.github.io/demo/%E7%B3%BB%E7%BB%9F%E5%8E%9F%E5%9E%8B%E5%9B%BE/%E4%B8%BB%E9%A2%98roi%E6%95%B0%E6%8D%AE.html)
 
+##### 需求点
+
+需要通过google ads api接口调用谷歌投放数据（广告账号、国家、日期维度），然后根据广告账户和应用的关系，将Facebook投放数据和谷歌投放数据整合在一起展示。
+
+##### Token
+
+线下给到开发
+
+##### 所需接口
+
+- 拉取多个账户下成效数据接口（可以直接调用）
+
+![image-20181018130423532](/Users/lee/Library/Application Support/typora-user-images/image-20181018130423532.png)
+
+##### 广告账户和应用的关系
+
+需要开发看一下API拉取的字段中是否有与关联应用有关的字段，如果没有的话，则手动维护谷歌账户和应用的关系
 
 ##### 参考文档
 
@@ -854,6 +874,8 @@ curl -G \
 [google sdk地址](https://github.com/googleads/googleads-php-lib)
 
 
+
+---
 
 
 
